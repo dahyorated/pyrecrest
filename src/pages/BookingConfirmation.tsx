@@ -6,7 +6,7 @@ import Button from '../components/common/Button';
 
 export default function BookingConfirmation() {
   const location = useLocation();
-  const { booking, bankDetails, bookingReference } = location.state || {};
+  const { booking, bankDetails, bookingReference, emailSent, emailError } = location.state || {};
 
   if (!booking) {
     return (
@@ -173,18 +173,35 @@ export default function BookingConfirmation() {
           </Card>
 
           {/* Confirmation Email Notice */}
-          <Card className="p-6 mt-6">
+          <Card className={`p-6 mt-6 ${emailSent === false ? 'border-2 border-red-300 bg-red-50' : ''}`}>
             <div className="flex items-start gap-3">
-              <svg className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-6 h-6 flex-shrink-0 mt-0.5 ${emailSent === false ? 'text-red-500' : 'text-primary'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-2">Email Confirmation Sent</h3>
-                <p className="text-gray-600 text-sm">
-                  A confirmation email with your booking details and bank account information
-                  has been sent to <strong>{booking.guestEmail}</strong>. Please check your inbox
-                  (and spam folder if needed).
-                </p>
+                {emailSent === false ? (
+                  <>
+                    <h3 className="font-semibold text-red-800 mb-2">Email Could Not Be Sent</h3>
+                    <p className="text-red-700 text-sm">
+                      We were unable to send a confirmation email to <strong>{booking.guestEmail}</strong>.
+                      Please save this page or take a screenshot of your booking details above.
+                    </p>
+                    {emailError && (
+                      <p className="text-red-600 text-xs mt-2 font-mono bg-red-100 p-2 rounded">
+                        Debug: {emailError}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-semibold text-gray-900 mb-2">Email Confirmation Sent</h3>
+                    <p className="text-gray-600 text-sm">
+                      A confirmation email with your booking details and bank account information
+                      has been sent to <strong>{booking.guestEmail}</strong>. Please check your inbox
+                      (and spam folder if needed).
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </Card>

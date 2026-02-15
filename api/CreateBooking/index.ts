@@ -172,15 +172,21 @@ export async function createBooking(
 
     // Send confirmation emails
     let emailSent = false;
+    let emailError_debug = "";
     try {
       await sendBookingConfirmationEmail(booking, bankDetails);
       await sendAdminNotificationEmail(booking);
       emailSent = true;
       context.log(`Emails sent successfully for booking ${bookingReference}`);
     } catch (emailError: any) {
-      context.log(`Error sending emails for booking ${bookingReference}:`, emailError?.message || emailError);
-      if (emailError?.response) {
-        context.log("SendGrid response:", JSON.stringify(emailError.response.body));
+      const errMsg = emailError?.message || String(emailError);
+      const sgBody = emailError?.response?.body;
+      emailError_debug = sgBody
+        ? JSON.stringify(sgBody)
+        : errMsg;
+      context.log(`Error sending emails for booking ${bookingReference}:`, errMsg);
+      if (sgBody) {
+        context.log("SendGrid response:", JSON.stringify(sgBody));
       }
       // Don't fail the booking if email fails
     }
@@ -193,6 +199,7 @@ export async function createBooking(
       bookingDetails: booking,
       bankDetails: bankDetails,
       emailSent: emailSent,
+      emailError: emailError_debug || undefined,
     };
 
     return {

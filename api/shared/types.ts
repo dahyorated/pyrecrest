@@ -89,4 +89,5 @@ export interface CreateBookingResponse {
   bookingDetails: Booking;
   bankDetails: BankDetails;
   emailSent?: boolean;
+  emailError?: string;
 }

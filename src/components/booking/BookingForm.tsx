@@ -79,11 +79,16 @@ export default function BookingForm() {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        if (!result.emailSent) {
+          console.warn('Email not sent:', result.emailError);
+        }
         navigate('/booking-confirmation', {
           state: {
             booking: result.bookingDetails,
             bankDetails: result.bankDetails,
             bookingReference: result.bookingReference,
+            emailSent: result.emailSent,
+            emailError: result.emailError,
           },
         });
       } else {
