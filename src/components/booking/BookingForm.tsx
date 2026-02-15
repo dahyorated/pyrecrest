@@ -41,9 +41,11 @@ export default function BookingForm() {
 
       if (diffDays > 0) {
         setNights(diffDays);
-        const basePrice = 15000;
+        const basePrice = 65000;
         const cleaningFee = 5000;
-        setTotalPrice(basePrice * diffDays + cleaningFee);
+        const subtotal = basePrice * diffDays + cleaningFee;
+        const vat = subtotal * 0.075; // 7.5% VAT
+        setTotalPrice(subtotal + vat);
       } else {
         setNights(0);
         setTotalPrice(0);
@@ -104,7 +106,7 @@ export default function BookingForm() {
           ⭐ Best Value
         </div>
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-5xl font-bold gradient-text">₦15,000</span>
+          <span className="text-5xl font-bold gradient-text">₦65,000</span>
           <span className="text-xl text-gray-600">/ night</span>
         </div>
         <p className="text-sm text-gray-500">Minimum stay: 2 nights</p>
@@ -152,12 +154,16 @@ export default function BookingForm() {
         {nights > 0 && (
           <div className="bg-gradient-to-br from-primary-50 to-accent-50 p-6 rounded-2xl space-y-3 border-2 border-primary-100">
             <div className="flex justify-between text-sm font-medium text-gray-700">
-              <span>₦15,000 × {nights} nights</span>
-              <span>₦{(15000 * nights).toLocaleString()}</span>
+              <span>₦65,000 × {nights} nights</span>
+              <span>₦{(65000 * nights).toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm font-medium text-gray-700">
               <span>Cleaning fee</span>
               <span>₦5,000</span>
+            </div>
+            <div className="flex justify-between text-sm font-medium text-gray-700">
+              <span>VAT (7.5%)</span>
+              <span>₦{((65000 * nights + 5000) * 0.075).toLocaleString()}</span>
             </div>
             <div className="border-t-2 border-primary-200 pt-3 flex justify-between items-center">
               <span className="font-bold text-gray-900">Total</span>

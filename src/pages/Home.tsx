@@ -75,20 +75,26 @@ export default function Home() {
       <main className="pt-20">
         {/* Hero Section */}
         <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-          {/* Animated Background */}
-          <div className="absolute inset-0 gradient-primary"></div>
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMy4zMTQtMi42ODYtNi02LTZzLTYgMi42ODYtNiA2IDIuNjg2IDYgNiA2IDYtMi42ODYgNi02ek0wIDBoNjB2NjBIMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30"></div>
+          {/* Background Image */}
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: 'url(/banner.jpg)' }}
+          ></div>
+          {/* Dark Overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/85 via-primary-800/80 to-primary-900/85"></div>
+          {/* Pattern Overlay */}
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMy4zMTQtMi42ODYtNi02LTZzLTYgMi42ODYtNiA2IDIuNjg2IDYgNiA2IDYtMi42ODYgNi02ek0wIDBoNjB2NjBIMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
 
           <div className="container relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <div className="animate-slide-down">
                 <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-                  Your <span className="text-accent-400">Premium</span> Home<br />
-                  Away From Home
+                  <span className="text-accent-400">New Age Solutions</span><br />
+                  For Smart Real Estate
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-100 mb-10 max-w-3xl mx-auto text-balance">
-                  Experience luxury and comfort in our fully serviced short-let apartments.
-                  Perfect for business trips, vacations, or extended stays in Lagos.
+                  Pyrecrest provides innovative access to premium serviced apartments.
+                  Experience seamless booking, modern living, and exceptional hospitality in Lagos.
                 </p>
               </div>
 
@@ -113,16 +119,17 @@ export default function Home() {
               {/* Stats */}
               <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 animate-fade-in">
                 {[
-                  { number: '1', label: 'Premium Property', suffix: '' },
-                  { number: '100', label: 'Happy Guests', suffix: '+' },
-                  { number: '4.9', label: 'Average Rating', suffix: '/5' },
-                  { number: '24', label: 'Hour Support', suffix: '/7' },
+                  { number: '1', label: 'Premium Property', suffix: '', icon: '🏢' },
+                  { number: '100', label: 'Happy Guests', suffix: '+', icon: '😊' },
+                  { number: '4.9', label: 'Average Rating', suffix: '/5', icon: '⭐' },
+                  { number: '24', label: 'Hour Support', suffix: '/7', icon: '🔧' },
                 ].map((stat, index) => (
-                  <div key={index} className="glass rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
-                    <div className="text-3xl md:text-4xl font-bold text-accent-400 mb-1">
+                  <div key={index} className="bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-lg border-2 border-primary-100 transform hover:scale-105 hover:shadow-xl transition-all duration-300">
+                    <div className="text-2xl mb-3">{stat.icon}</div>
+                    <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                       {stat.number}{stat.suffix}
                     </div>
-                    <div className="text-sm text-gray-200">{stat.label}</div>
+                    <div className="text-sm text-gray-700 font-semibold uppercase tracking-wide">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -231,7 +238,7 @@ export default function Home() {
                     <div className="flex items-end justify-between mb-8">
                       <div>
                         <div className="text-4xl font-bold gradient-text mb-1">
-                          ₦15,000
+                          ₦65,000
                         </div>
                         <p className="text-gray-500">per night · Min 2 nights</p>
                       </div>
@@ -281,8 +288,8 @@ export default function Home() {
                       {testimonial.avatar}
                     </div>
                     <div>
-                      <div className="font-bold text-white">{testimonial.name}</div>
-                      <div className="text-sm text-gray-300">{testimonial.role}</div>
+                      <div className="font-bold text-gray-900">{testimonial.name}</div>
+                      <div className="text-sm text-gray-600">{testimonial.role}</div>
                     </div>
                   </div>
 
@@ -294,7 +301,7 @@ export default function Home() {
                     ))}
                   </div>
 
-                  <p className="text-gray-200 leading-relaxed italic">
+                  <p className="text-gray-700 leading-relaxed italic">
                     "{testimonial.text}"
                   </p>
                 </div>

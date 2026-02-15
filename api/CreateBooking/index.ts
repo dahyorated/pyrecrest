@@ -126,10 +126,11 @@ export async function createBooking(
     }
 
     // Calculate pricing (for now, use hardcoded values - can fetch from properties table later)
-    const basePrice = 15000; // ₦15,000 per night
+    const basePrice = 65000; // ₦65,000 per night
     const cleaningFee = 5000; // ₦5,000
-    const subtotal = basePrice * nights;
-    const total = subtotal + cleaningFee;
+    const subtotal = basePrice * nights + cleaningFee;
+    const vat = Math.round(subtotal * 0.075); // 7.5% VAT
+    const total = subtotal + vat;
 
     // Generate booking reference and ID
     const bookingReference = generateBookingReference();

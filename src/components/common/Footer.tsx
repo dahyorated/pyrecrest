@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="mb-4">
-              <Logo className="h-12 brightness-0 invert" />
+              <Logo className="h-12" />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Premium serviced short-let apartments in Nigeria. Your home away from home.
