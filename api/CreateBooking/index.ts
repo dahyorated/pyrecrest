@@ -1,4 +1,4 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions";
+import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import {
   getBookingsClient,
   getBlockedDatesClient,
@@ -8,29 +8,26 @@ import {
 import { sendBookingConfirmationEmail, sendAdminNotificationEmail } from "../shared/email";
 import { CreateBookingRequest, CreateBookingResponse, Booking, BankDetails } from "../shared/types";
 
-const httpTrigger: AzureFunction = async function (
-  context: Context,
-  req: HttpRequest
-): Promise<void> {
+export async function createBooking(
+  request: HttpRequest,
+  context: InvocationContext
+): Promise<HttpResponseInit> {
   context.log("CreateBooking function processing request");
 
-  // Set CORS headers
-  context.res = {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  };
-
   // Handle OPTIONS request for CORS
-  if (req.method === "OPTIONS") {
-    context.res.status = 200;
-    return;
+  if (request.method === "OPTIONS") {
+    return {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    };
   }
 
   try {
-    const bookingRequest: CreateBookingRequest = req.body;
+    const bookingRequest: CreateBookingRequest = await request.json() as CreateBookingRequest;
 
     // Validate request
     if (
@@ -40,22 +37,22 @@ const httpTrigger: AzureFunction = async function (
       !bookingRequest.checkOut ||
       !bookingRequest.guestDetails
     ) {
-      context.res = {
+      return {
         status: 400,
-        body: { error: "Missing required booking information" },
+        jsonBody: { error: "Missing required booking information" },
+        headers: { "Access-Control-Allow-Origin": "*" },
       };
-      return;
     }
 
     const { propertyId, checkIn, checkOut, guestDetails, specialRequests } = bookingRequest;
 
     // Validate guest details
     if (!guestDetails.name || !guestDetails.email || !guestDetails.phone || !guestDetails.guestCount) {
-      context.res = {
+      return {
         status: 400,
-        body: { error: "Missing required guest information" },
+        jsonBody: { error: "Missing required guest information" },
+        headers: { "Access-Control-Allow-Origin": "*" },
       };
-      return;
     }
 
     // Validate dates
@@ -65,19 +62,19 @@ const httpTrigger: AzureFunction = async function (
     today.setHours(0, 0, 0, 0);
 
     if (checkInDate < today) {
-      context.res = {
+      return {
         status: 400,
-        body: { error: "Check-in date cannot be in the past" },
+        jsonBody: { error: "Check-in date cannot be in the past" },
+        headers: { "Access-Control-Allow-Origin": "*" },
       };
-      return;
     }
 
     if (checkOutDate <= checkInDate) {
-      context.res = {
+      return {
         status: 400,
-        body: { error: "Check-out date must be after check-in date" },
+        jsonBody: { error: "Check-out date must be after check-in date" },
+        headers: { "Access-Control-Allow-Origin": "*" },
       };
-      return;
     }
 
     // Calculate nights
@@ -100,11 +97,11 @@ const httpTrigger: AzureFunction = async function (
 
       // Check for date overlap
       if (checkInDate < bookingCheckOut && checkOutDate > bookingCheckIn) {
-        context.res = {
+        return {
           status: 409,
-          body: { error: "These dates are not available. Please select different dates." },
+          jsonBody: { error: "These dates are not available. Please select different dates." },
+          headers: { "Access-Control-Allow-Origin": "*" },
         };
-        return;
       }
     }
 
@@ -120,11 +117,11 @@ const httpTrigger: AzureFunction = async function (
       const blockedEnd = new Date(blocked.endDate as string);
 
       if (checkInDate < blockedEnd && checkOutDate > blockedStart) {
-        context.res = {
+        return {
           status: 409,
-          body: { error: "These dates are blocked. Please select different dates." },
+          jsonBody: { error: "These dates are blocked. Please select different dates." },
+          headers: { "Access-Control-Allow-Origin": "*" },
         };
-        return;
       }
     }
 
@@ -177,7 +174,7 @@ const httpTrigger: AzureFunction = async function (
       await sendBookingConfirmationEmail(booking, bankDetails);
       await sendAdminNotificationEmail(booking);
     } catch (emailError) {
-      context.log.error("Error sending emails:", emailError);
+      context.log("Error sending emails:", emailError);
       // Don't fail the booking if email fails
     }
 
@@ -190,17 +187,24 @@ const httpTrigger: AzureFunction = async function (
       bankDetails: bankDetails,
     };
 
-    context.res = {
+    return {
       status: 201,
-      body: response,
+      jsonBody: response,
+      headers: { "Access-Control-Allow-Origin": "*" },
     };
   } catch (error) {
-    context.log.error("Error creating booking:", error);
-    context.res = {
+    context.log("Error creating booking:", error);
+    return {
       status: 500,
-      body: { error: "An error occurred while creating your booking. Please try again." },
+      jsonBody: { error: "An error occurred while creating your booking. Please try again." },
+      headers: { "Access-Control-Allow-Origin": "*" },
     };
   }
-};
+}
 
-export default httpTrigger;
+app.http('CreateBooking', {
+  methods: ['POST', 'OPTIONS'],
+  authLevel: 'anonymous',
+  route: 'CreateBooking',
+  handler: createBooking,
+});
