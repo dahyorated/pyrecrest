@@ -1,0 +1,25 @@
+{
+  "name": "pyrecrest-api",
+  "version": "1.0.0",
+  "description": "Azure Functions for Pyrecrest booking system",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "prestart": "npm run build",
+    "start": "func start",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "@azure/data-tables": "^13.3.0",
+    "@azure/functions": "^4.7.0",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "@sendgrid/mail": "^8.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/bcryptjs": "^2.4.6",
+    "typescript": "^5.7.2"
+  }
+}

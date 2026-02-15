@@ -1,0 +1,8 @@
+node_modules
+dist
+.vscode
+*.js.map
+*.js
+!jest.config.js
+local.settings.json
+.env
