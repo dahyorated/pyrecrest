@@ -5,6 +5,7 @@ let propertiesClient: TableClient;
 let bookingsClient: TableClient;
 let blockedDatesClient: TableClient;
 let settingsClient: TableClient;
+let adminsClient: TableClient;
 
 function getConnectionString(): string {
   const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING || "";
@@ -20,6 +21,7 @@ function initializeTableClients(): void {
   bookingsClient = TableClient.fromConnectionString(connectionString, "bookings");
   blockedDatesClient = TableClient.fromConnectionString(connectionString, "blockedDates");
   settingsClient = TableClient.fromConnectionString(connectionString, "settings");
+  adminsClient = TableClient.fromConnectionString(connectionString, "admins");
 }
 
 // Ensure a table exists before first use
@@ -57,6 +59,12 @@ export async function getSettingsClient(): Promise<TableClient> {
   if (!settingsClient) initializeTableClients();
   await ensureTable(settingsClient);
   return settingsClient;
+}
+
+export async function getAdminsClient(): Promise<TableClient> {
+  if (!adminsClient) initializeTableClients();
+  await ensureTable(adminsClient);
+  return adminsClient;
 }
 
 // Helper function to generate booking reference

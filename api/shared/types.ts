@@ -70,6 +70,16 @@ export interface BankDetails {
   bankName: string;
 }
 
+export interface Admin {
+  partitionKey: string;
+  rowKey: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+  status: "pending" | "approved";
+  createdAt: string;
+}
+
 export interface CreateBookingRequest {
   propertyId: string;
   checkIn: string;

@@ -1,6 +1,7 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { getBookingsClient } from "../shared/tableStorage";
 import { sendPaymentConfirmedEmail } from "../shared/email";
+import { requireAuth } from "../shared/auth";
 
 export async function updateBooking(
   request: HttpRequest,
@@ -20,7 +21,8 @@ export async function updateBooking(
   }
 
   try {
-    // TODO: Add authentication check
+    const auth = requireAuth(request);
+    if (!auth.valid) return auth.response;
 
     const { rowKey, status, paymentStatus } = await request.json() as any;
 

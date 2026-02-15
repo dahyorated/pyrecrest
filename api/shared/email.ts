@@ -243,3 +243,65 @@ export async function sendPaymentConfirmedEmail(booking: Booking): Promise<void>
     throw error;
   }
 }
+
+export async function sendAdminApprovalEmail(
+  adminName: string,
+  adminEmail: string,
+  approvalToken: string
+): Promise<void> {
+  const { fromEmail } = initSendGrid();
+
+  const frontendUrl = process.env.FRONTEND_URL || "https://www.pyrecrest.com";
+  const approvalLink = `${frontendUrl}/api/ApproveAdmin?token=${approvalToken}`;
+
+  const msg = {
+    to: "pyrecrestng@gmail.com",
+    from: fromEmail,
+    subject: `New Admin Signup Request - ${adminName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #284498; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background-color: #f7f7f7; }
+          .admin-details { background-color: white; padding: 15px; margin: 15px 0; border-radius: 8px; }
+          .approve-btn { display: inline-block; background-color: #10B981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 15px 0; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Pyrecrest</h1>
+            <p>New Admin Approval Request</p>
+          </div>
+          <div class="content">
+            <p>A new admin has requested access to the Pyrecrest dashboard:</p>
+            <div class="admin-details">
+              <p><strong>Name:</strong> ${adminName}</p>
+              <p><strong>Email:</strong> ${adminEmail}</p>
+            </div>
+            <p>Click the button below to approve this admin:</p>
+            <a href="${approvalLink}" class="approve-btn">Approve Admin</a>
+            <p style="color: #666; font-size: 12px;">This link expires in 24 hours. If you did not expect this request, you can safely ignore this email.</p>
+          </div>
+          <div class="footer">
+            <p>&copy; 2026 Pyrecrest. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log(`Admin approval email sent for ${adminEmail}`);
+  } catch (error) {
+    console.error("Error sending admin approval email:", error);
+    throw error;
+  }
+}
