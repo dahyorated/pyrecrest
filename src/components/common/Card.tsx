@@ -4,13 +4,16 @@ interface CardProps {
   children: ReactNode;
   className?: string;
   hover?: boolean;
+  glass?: boolean;
 }
 
-export default function Card({ children, className = '', hover = false }: CardProps) {
-  const hoverClass = hover ? 'hover:shadow-xl transition-shadow duration-300' : '';
+export default function Card({ children, className = '', hover = false, glass = false }: CardProps) {
+  const baseStyles = 'rounded-3xl overflow-hidden';
+  const hoverClass = hover ? 'card-hover' : '';
+  const glassClass = glass ? 'glass' : 'bg-white shadow-soft';
 
   return (
-    <div className={`bg-white rounded-xl shadow-md overflow-hidden ${hoverClass} ${className}`}>
+    <div className={`${baseStyles} ${glassClass} ${hoverClass} ${className}`}>
       {children}
     </div>
   );

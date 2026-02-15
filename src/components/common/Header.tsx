@@ -1,35 +1,45 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'glass shadow-soft'
+          : 'bg-white/50 backdrop-blur-sm'
+      }`}
+    >
+      <nav className="container">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-primary">Pyrecrest</span>
+          <Link to="/" className="flex items-center group">
+            <div className="relative">
+              <span className="text-3xl font-bold gradient-text">Pyrecrest</span>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-accent-400 to-accent-600 group-hover:w-full transition-all duration-300"></div>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-primary transition-colors">
-              Home
-            </Link>
-            <Link to="/properties" className="text-gray-700 hover:text-primary transition-colors">
-              Properties
-            </Link>
-            <Link to="/about" className="text-gray-700 hover:text-primary transition-colors">
-              About
-            </Link>
-            <Link to="/contact" className="text-gray-700 hover:text-primary transition-colors">
-              Contact
-            </Link>
+          <div className="hidden md:flex items-center space-x-1">
+            <NavLink to="/">Home</NavLink>
+            <NavLink to="/properties">Properties</NavLink>
+            <NavLink to="/about">About</NavLink>
+            <NavLink to="/contact">Contact</NavLink>
             <Link
               to="/property/apartment-001"
-              className="bg-accent hover:bg-accent-600 text-gray-900 px-6 py-2 rounded-lg font-semibold transition-colors"
+              className="ml-4 px-6 py-2.5 gradient-accent text-gray-900 rounded-full font-semibold shadow-md hover:shadow-glow transform hover:scale-105 transition-all duration-300"
             >
               Book Now
             </Link>
@@ -37,10 +47,10 @@ export default function Header() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100"
+            className="md:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {mobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -51,48 +61,65 @@ export default function Header() {
         </div>
 
         {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t">
-            <div className="flex flex-col space-y-4">
-              <Link
-                to="/"
-                className="text-gray-700 hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link
-                to="/properties"
-                className="text-gray-700 hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Properties
-              </Link>
-              <Link
-                to="/about"
-                className="text-gray-700 hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                className="text-gray-700 hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Contact
-              </Link>
-              <Link
-                to="/property/apartment-001"
-                className="bg-accent hover:bg-accent-600 text-gray-900 px-6 py-2 rounded-lg font-semibold text-center transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Book Now
-              </Link>
-            </div>
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ${
+            mobileMenuOpen ? 'max-h-96 pb-6' : 'max-h-0'
+          }`}
+        >
+          <div className="flex flex-col space-y-2 pt-4">
+            <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>
+              Home
+            </MobileNavLink>
+            <MobileNavLink to="/properties" onClick={() => setMobileMenuOpen(false)}>
+              Properties
+            </MobileNavLink>
+            <MobileNavLink to="/about" onClick={() => setMobileMenuOpen(false)}>
+              About
+            </MobileNavLink>
+            <MobileNavLink to="/contact" onClick={() => setMobileMenuOpen(false)}>
+              Contact
+            </MobileNavLink>
+            <Link
+              to="/property/apartment-001"
+              className="px-6 py-3 gradient-accent text-gray-900 rounded-xl font-semibold text-center shadow-md"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Book Now
+            </Link>
           </div>
-        )}
+        </div>
       </nav>
     </header>
+  );
+}
+
+function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+  return (
+    <Link
+      to={to}
+      className="px-4 py-2 text-gray-700 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-all duration-200 font-medium"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function MobileNavLink({
+  to,
+  onClick,
+  children
+}: {
+  to: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      to={to}
+      className="px-4 py-3 text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-200 font-medium"
+      onClick={onClick}
+    >
+      {children}
+    </Link>
   );
 }
