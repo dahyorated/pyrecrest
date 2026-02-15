@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Button from '../common/Button';
@@ -32,7 +32,7 @@ export default function BookingForm() {
   const checkOut = watch('checkOut');
 
   // Calculate nights and price when dates change
-  useState(() => {
+  useEffect(() => {
     if (checkIn && checkOut) {
       const checkInDate = new Date(checkIn);
       const checkOutDate = new Date(checkOut);
@@ -44,9 +44,12 @@ export default function BookingForm() {
         const basePrice = 15000;
         const cleaningFee = 5000;
         setTotalPrice(basePrice * diffDays + cleaningFee);
+      } else {
+        setNights(0);
+        setTotalPrice(0);
       }
     }
-  });
+  }, [checkIn, checkOut]);
 
   const onSubmit = async (data: BookingFormData) => {
     setIsSubmitting(true);
@@ -74,7 +77,6 @@ export default function BookingForm() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // Navigate to confirmation page with booking data
         navigate('/booking-confirmation', {
           state: {
             booking: result.bookingDetails,
@@ -93,64 +95,82 @@ export default function BookingForm() {
     }
   };
 
-  // Get today's date for min date
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <Card className="p-6">
-      <div className="mb-6">
-        <div className="text-3xl font-bold text-primary">
-          ₦15,000 <span className="text-lg font-normal text-gray-600">/ night</span>
+    <Card className="p-8 sticky top-28">
+      <div className="mb-8">
+        <div className="inline-block px-4 py-2 bg-gradient-to-r from-accent-400 to-accent-600 text-gray-900 rounded-full text-sm font-bold mb-4">
+          ⭐ Best Value
         </div>
-        <p className="text-sm text-gray-500 mt-1">Minimum stay: 2 nights</p>
+        <div className="flex items-baseline gap-2 mb-2">
+          <span className="text-5xl font-bold gradient-text">₦15,000</span>
+          <span className="text-xl text-gray-600">/ night</span>
+        </div>
+        <p className="text-sm text-gray-500">Minimum stay: 2 nights</p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Dates */}
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            type="date"
-            label="Check-in"
-            min={today}
-            {...register('checkIn', {
-              required: 'Check-in date is required',
-            })}
-            error={errors.checkIn?.message}
-          />
-          <Input
-            type="date"
-            label="Check-out"
-            min={checkIn || today}
-            {...register('checkOut', {
-              required: 'Check-out date is required',
-            })}
-            error={errors.checkOut?.message}
-          />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Dates Section */}
+        <div className="space-y-4">
+          <label className="block text-sm font-bold text-gray-900 uppercase tracking-wide">
+            Select Dates
+          </label>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-2">Check-in</label>
+              <input
+                type="date"
+                min={today}
+                {...register('checkIn', {
+                  required: 'Check-in date is required',
+                })}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-gray-900 font-medium"
+              />
+              {errors.checkIn && (
+                <p className="mt-1 text-xs text-red-500">{errors.checkIn.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-2">Check-out</label>
+              <input
+                type="date"
+                min={checkIn || today}
+                {...register('checkOut', {
+                  required: 'Check-out date is required',
+                })}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all text-gray-900 font-medium"
+              />
+              {errors.checkOut && (
+                <p className="mt-1 text-xs text-red-500">{errors.checkOut.message}</p>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Price Breakdown */}
         {nights > 0 && (
-          <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-            <div className="flex justify-between text-sm">
+          <div className="bg-gradient-to-br from-primary-50 to-accent-50 p-6 rounded-2xl space-y-3 border-2 border-primary-100">
+            <div className="flex justify-between text-sm font-medium text-gray-700">
               <span>₦15,000 × {nights} nights</span>
               <span>₦{(15000 * nights).toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between text-sm font-medium text-gray-700">
               <span>Cleaning fee</span>
               <span>₦5,000</span>
             </div>
-            <div className="border-t pt-2 flex justify-between font-bold">
-              <span>Total</span>
-              <span>₦{totalPrice.toLocaleString()}</span>
+            <div className="border-t-2 border-primary-200 pt-3 flex justify-between items-center">
+              <span className="font-bold text-gray-900">Total</span>
+              <span className="text-2xl font-bold gradient-text">₦{totalPrice.toLocaleString()}</span>
             </div>
           </div>
         )}
 
         {/* Guest Details */}
-        <div className="border-t pt-4">
-          <h3 className="font-semibold text-gray-900 mb-4">Guest Information</h3>
+        {nights >= 2 && (
+          <div className="space-y-4 pt-6 border-t-2 border-gray-100">
+            <h3 className="font-bold text-gray-900 uppercase tracking-wide text-sm">Guest Information</h3>
 
-          <div className="space-y-4">
             <Input
               type="text"
               label="Full Name"
@@ -206,12 +226,12 @@ export default function BookingForm() {
               <textarea
                 {...register('specialRequests')}
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                 placeholder="Early check-in, extra pillows, etc."
               />
             </div>
           </div>
-        </div>
+        )}
 
         <Button
           type="submit"
@@ -219,13 +239,32 @@ export default function BookingForm() {
           fullWidth
           size="lg"
           disabled={isSubmitting || nights < 2}
+          className="font-bold text-lg shadow-glow"
         >
-          {isSubmitting ? 'Processing...' : nights < 2 ? 'Select Dates (Min 2 Nights)' : 'Reserve'}
+          {isSubmitting ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Processing...
+            </span>
+          ) : nights < 2 ? (
+            'Select Dates (Min 2 Nights)'
+          ) : nights >= 2 && !checkIn ? (
+            'Select Check-in Date'
+          ) : nights >= 2 && !checkOut ? (
+            'Select Check-out Date'
+          ) : (
+            <>Reserve Now →</>
+          )}
         </Button>
 
-        <p className="text-xs text-gray-500 text-center">
-          You won't be charged yet. Pay via bank transfer after booking.
-        </p>
+        {nights >= 2 && (
+          <p className="text-xs text-gray-500 text-center leading-relaxed">
+            🔒 Secure booking · No payment now · Pay via bank transfer after confirmation
+          </p>
+        )}
       </form>
     </Card>
   );

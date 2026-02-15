@@ -4,11 +4,12 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-gray-50 via-white to-gray-50 text-gray-900 font-sans antialiased;
+    @apply bg-white text-gray-900 font-sans antialiased;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-weight: 800;
   }
 }
 
@@ -18,29 +19,26 @@
   }
 
   .gradient-primary {
-    @apply bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800;
+    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 50%, #60A5FA 100%);
   }
 
   .gradient-accent {
-    @apply bg-gradient-to-r from-accent-400 to-accent-600;
+    background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #FCD34D 100%);
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent;
+    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .glass {
-    @apply bg-white/80 backdrop-blur-lg border border-white/20;
+    @apply bg-white/90 backdrop-blur-xl border border-white/40 shadow-soft;
   }
 
   .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-hover;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+    @apply transition-all duration-300 hover:-translate-y-3 hover:shadow-hover;
   }
 }
 
@@ -51,7 +49,7 @@ html {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
@@ -59,9 +57,23 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary-400 rounded-full;
+  @apply bg-primary-500 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-primary-600;
+}
+
+/* Date input styling */
+input[type="date"] {
+  color-scheme: light;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.3);
+}
+
+input[type="date"]:hover::-webkit-calendar-picker-indicator {
+  filter: invert(0);
 }
