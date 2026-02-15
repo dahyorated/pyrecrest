@@ -58,8 +58,8 @@ export default function BookingConfirmation() {
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Payment Required</h3>
                 <p className="text-gray-700">
-                  Please complete payment within 24 hours to confirm your booking.
-                  Your reservation is currently pending payment confirmation.
+                  Please complete payment within 30 minutes to confirm your booking.
+                  After 30 minutes, your reservation will be automatically released.
                 </p>
               </div>
             </div>

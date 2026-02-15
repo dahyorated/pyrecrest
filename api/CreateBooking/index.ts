@@ -4,6 +4,7 @@ import {
   getBlockedDatesClient,
   generateBookingReference,
   generateRowKey,
+  cancelIfExpired,
 } from "../shared/tableStorage";
 import { sendBookingConfirmationEmail, sendAdminNotificationEmail } from "../shared/email";
 import { CreateBookingRequest, CreateBookingResponse, Booking, BankDetails } from "../shared/types";
@@ -92,6 +93,11 @@ export async function createBooking(
     });
 
     for await (const booking of bookingsIter) {
+      // Auto-cancel expired pending reservations
+      if (await cancelIfExpired(bookingsClient, booking)) {
+        continue;
+      }
+
       const bookingCheckIn = new Date(booking.checkIn as string);
       const bookingCheckOut = new Date(booking.checkOut as string);
 
@@ -137,6 +143,7 @@ export async function createBooking(
     const rowKey = generateRowKey();
 
     // Create booking entity
+    const createdAt = new Date();
     const booking: Booking = {
       partitionKey: "BOOKING",
       rowKey: rowKey,
@@ -155,7 +162,8 @@ export async function createBooking(
       paymentStatus: "pending",
       paymentMethod: "bank_transfer",
       specialRequests: specialRequests,
-      createdAt: new Date().toISOString(),
+      createdAt: createdAt.toISOString(),
+      expiresAt: new Date(createdAt.getTime() + 30 * 60 * 1000).toISOString(),
     };
 
     // Save to Azure Table Storage

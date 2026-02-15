@@ -74,7 +74,7 @@ export async function sendBookingConfirmationEmail(
 
             <div class="bank-details">
               <h3>⚠️ Payment Required</h3>
-              <p>Please make payment within 24 hours to confirm your booking.</p>
+              <p>Please make payment within <strong>30 minutes</strong> to confirm your booking. After 30 minutes, your reservation will be automatically released.</p>
               <p><strong>Bank Name:</strong> ${bankDetails.bankName}</p>
               <p><strong>Account Name:</strong> ${bankDetails.accountName}</p>
               <p><strong>Account Number:</strong> ${bankDetails.accountNumber}</p>
@@ -171,5 +171,75 @@ export async function sendAdminNotificationEmail(booking: Booking): Promise<void
   } catch (error) {
     console.error("Error sending admin notification:", error);
     // Don't throw - admin notification failure shouldn't block booking
+  }
+}
+
+export async function sendPaymentConfirmedEmail(booking: Booking): Promise<void> {
+  const { fromEmail } = initSendGrid();
+
+  const msg = {
+    to: booking.guestEmail,
+    from: fromEmail,
+    subject: `Payment Confirmed - ${booking.bookingReference}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background-color: #284498; color: white; padding: 20px; text-align: center; }
+          .content { padding: 20px; background-color: #f7f7f7; }
+          .booking-details { background-color: white; padding: 15px; margin: 15px 0; border-radius: 8px; }
+          .confirmed-badge { background-color: #d4edda; color: #155724; padding: 15px; margin: 15px 0; border-radius: 8px; border-left: 4px solid #28a745; text-align: center; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+          .highlight { color: #284498; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Pyrecrest</h1>
+            <p>Payment Confirmed</p>
+          </div>
+
+          <div class="content">
+            <p>Dear ${booking.guestName},</p>
+
+            <div class="confirmed-badge">
+              <h2>Your Booking is Confirmed!</h2>
+              <p>We have received your payment and your reservation is now secured.</p>
+            </div>
+
+            <div class="booking-details">
+              <h3>Booking Details</h3>
+              <p><strong>Booking Reference:</strong> <span class="highlight">${booking.bookingReference}</span></p>
+              <p><strong>Check-in:</strong> ${new Date(booking.checkIn as string).toLocaleDateString('en-GB')}</p>
+              <p><strong>Check-out:</strong> ${new Date(booking.checkOut as string).toLocaleDateString('en-GB')}</p>
+              <p><strong>Nights:</strong> ${booking.nights}</p>
+              <p><strong>Guests:</strong> ${booking.guestCount}</p>
+              <p><strong>Total Paid:</strong> ₦${Number(booking.total).toLocaleString()}</p>
+            </div>
+
+            <p>We look forward to welcoming you! If you have any questions before your stay, please don't hesitate to contact us.</p>
+
+            <p>Best regards,<br>The Pyrecrest Team</p>
+          </div>
+
+          <div class="footer">
+            <p>&copy; 2026 Pyrecrest. All rights reserved.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  };
+
+  try {
+    await sgMail.send(msg);
+    console.log(`Payment confirmed email sent to ${booking.guestEmail}`);
+  } catch (error) {
+    console.error("Error sending payment confirmed email:", error);
+    throw error;
   }
 }

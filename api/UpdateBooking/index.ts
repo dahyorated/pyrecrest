@@ -1,5 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { getBookingsClient } from "../shared/tableStorage";
+import { sendPaymentConfirmedEmail } from "../shared/email";
 
 export async function updateBooking(
   request: HttpRequest,
@@ -50,6 +51,17 @@ export async function updateBooking(
     }
 
     await bookingsClient.updateEntity({ ...booking, ...updates }, "Merge");
+
+    // Send confirmation email when booking is confirmed
+    if (status === 'confirmed') {
+      try {
+        await sendPaymentConfirmedEmail(booking as any);
+        context.log(`Payment confirmed email sent for booking ${booking.rowKey}`);
+      } catch (emailError) {
+        context.log("Error sending payment confirmed email:", emailError);
+        // Don't fail the update if email fails
+      }
+    }
 
     return {
       status: 200,

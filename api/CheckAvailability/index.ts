@@ -1,5 +1,5 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
-import { getBookingsClient, getBlockedDatesClient } from "../shared/tableStorage";
+import { getBookingsClient, getBlockedDatesClient, cancelIfExpired } from "../shared/tableStorage";
 
 export async function checkAvailability(
   request: HttpRequest,
@@ -41,6 +41,11 @@ export async function checkAvailability(
     });
 
     for await (const booking of bookingsIter) {
+      // Auto-cancel expired pending reservations
+      if (await cancelIfExpired(bookingsClient, booking)) {
+        continue;
+      }
+
       const bookingCheckIn = new Date(booking.checkIn as string);
       const bookingCheckOut = new Date(booking.checkOut as string);
 

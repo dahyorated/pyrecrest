@@ -72,4 +72,34 @@ export function generateRowKey(): string {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
+// Check if a pending_payment booking has expired and auto-cancel it
+export async function cancelIfExpired(
+  client: TableClient,
+  booking: any
+): Promise<boolean> {
+  if (booking.status !== "pending_payment") {
+    return false;
+  }
+
+  const expiresAt = booking.expiresAt as string | undefined;
+  if (!expiresAt) {
+    return false; // Legacy booking without expiresAt — leave it alone
+  }
+
+  if (new Date() > new Date(expiresAt)) {
+    await client.updateEntity(
+      {
+        partitionKey: booking.partitionKey,
+        rowKey: booking.rowKey,
+        status: "cancelled",
+        paymentStatus: "expired",
+      },
+      "Merge"
+    );
+    return true;
+  }
+
+  return false;
+}
+
 // Clients are initialized lazily via getXxxClient() functions

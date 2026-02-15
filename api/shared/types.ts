@@ -35,10 +35,11 @@ export interface Booking {
   nights: number;
   basePrice: number;
   total: number;
-  paymentStatus: 'pending' | 'paid' | 'failed';
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'expired';
   paymentMethod: string;
   specialRequests?: string;
   createdAt: string;
+  expiresAt?: string;
   timestamp?: Date;
 }
 
