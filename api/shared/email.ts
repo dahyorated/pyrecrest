@@ -1,24 +1,39 @@
 import sgMail from "@sendgrid/mail";
 import { Booking, BankDetails } from "./types";
 
-function initSendGrid(): string {
+function initSendGrid(): { fromEmail: string; adminEmail: string } {
   const apiKey = process.env.SENDGRID_API_KEY || "";
   if (!apiKey) {
     throw new Error("SENDGRID_API_KEY environment variable is not set");
   }
   sgMail.setApiKey(apiKey);
-  return process.env.ADMIN_EMAIL || "noreply@pyrecrest.com";
+
+  // SENDGRID_FROM_EMAIL must be a verified sender in SendGrid
+  // (via Single Sender Verification or Domain Authentication).
+  // This is separate from ADMIN_EMAIL which receives notifications.
+  const fromEmail = process.env.SENDGRID_FROM_EMAIL || "";
+  if (!fromEmail) {
+    throw new Error(
+      "SENDGRID_FROM_EMAIL environment variable is not set. " +
+      "Set this to your SendGrid verified sender email address."
+    );
+  }
+
+  return {
+    fromEmail,
+    adminEmail: process.env.ADMIN_EMAIL || "",
+  };
 }
 
 export async function sendBookingConfirmationEmail(
   booking: Booking,
   bankDetails: BankDetails
 ): Promise<void> {
-  const FROM_EMAIL = initSendGrid();
+  const { fromEmail, adminEmail } = initSendGrid();
 
   const msg = {
     to: booking.guestEmail,
-    from: FROM_EMAIL,
+    from: fromEmail,
     subject: `Booking Confirmation - ${booking.bookingReference}`,
     html: `
       <!DOCTYPE html>
@@ -67,7 +82,7 @@ export async function sendBookingConfirmationEmail(
               <p><strong>Reference:</strong> ${booking.bookingReference}</p>
             </div>
 
-            <p><strong>Important:</strong> After making payment, please send your payment confirmation to ${process.env.ADMIN_EMAIL || FROM_EMAIL} with your booking reference.</p>
+            <p><strong>Important:</strong> After making payment, please send your payment confirmation to ${adminEmail || fromEmail} with your booking reference.</p>
 
             ${booking.specialRequests ? `<p><strong>Special Requests:</strong> ${booking.specialRequests}</p>` : ''}
 
@@ -97,17 +112,16 @@ export async function sendBookingConfirmationEmail(
 }
 
 export async function sendAdminNotificationEmail(booking: Booking): Promise<void> {
-  const FROM_EMAIL = initSendGrid();
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "";
+  const { fromEmail, adminEmail } = initSendGrid();
 
-  if (!ADMIN_EMAIL) {
+  if (!adminEmail) {
     console.error("ADMIN_EMAIL environment variable is not set, skipping admin notification");
     return;
   }
 
   const msg = {
-    to: ADMIN_EMAIL,
-    from: FROM_EMAIL,
+    to: adminEmail,
+    from: fromEmail,
     subject: `New Booking - ${booking.bookingReference}`,
     html: `
       <!DOCTYPE html>
