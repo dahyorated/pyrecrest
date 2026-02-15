@@ -4,6 +4,7 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import PropertyDetails from './pages/PropertyDetails'
 import BookingConfirmation from './pages/BookingConfirmation'
+import AdminDashboard from './pages/AdminDashboard'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/property/:id" element={<PropertyDetails />} />
         <Route path="/properties" element={<PropertyDetails />} />
         <Route path="/booking-confirmation" element={<BookingConfirmation />} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   )
