@@ -23,7 +23,7 @@ export async function getBookings(
     // TODO: Add authentication check here
     // For now, returning all bookings for admin
 
-    const bookingsClient = getBookingsClient();
+    const bookingsClient = await getBookingsClient();
     const bookings = [];
 
     // Fetch all bookings

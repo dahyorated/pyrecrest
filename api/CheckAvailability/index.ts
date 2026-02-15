@@ -33,7 +33,7 @@ export async function checkAvailability(
     const checkOutDate = new Date(checkOut);
 
     // Check existing bookings
-    const bookingsClient = getBookingsClient();
+    const bookingsClient = await getBookingsClient();
     const bookingsIter = bookingsClient.listEntities({
       queryOptions: {
         filter: `PartitionKey eq 'BOOKING' and propertyId eq '${propertyId}' and (status eq 'confirmed' or status eq 'pending_payment')`,
@@ -54,7 +54,7 @@ export async function checkAvailability(
     }
 
     // Check blocked dates
-    const blockedDatesClient = getBlockedDatesClient();
+    const blockedDatesClient = await getBlockedDatesClient();
     const blockedIter = blockedDatesClient.listEntities({
       queryOptions: {
         filter: `PartitionKey eq 'BLOCKED' and propertyId eq '${propertyId}'`,

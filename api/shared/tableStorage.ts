@@ -14,50 +14,48 @@ function getConnectionString(): string {
   return connectionString;
 }
 
-export function initializeTableClients() {
+function initializeTableClients(): void {
+  const connectionString = getConnectionString();
+  propertiesClient = TableClient.fromConnectionString(connectionString, "properties");
+  bookingsClient = TableClient.fromConnectionString(connectionString, "bookings");
+  blockedDatesClient = TableClient.fromConnectionString(connectionString, "blockedDates");
+  settingsClient = TableClient.fromConnectionString(connectionString, "settings");
+}
+
+// Ensure a table exists before first use
+async function ensureTable(client: TableClient): Promise<void> {
   try {
-    const connectionString = getConnectionString();
-    propertiesClient = TableClient.fromConnectionString(connectionString, "properties");
-    bookingsClient = TableClient.fromConnectionString(connectionString, "bookings");
-    blockedDatesClient = TableClient.fromConnectionString(connectionString, "blockedDates");
-    settingsClient = TableClient.fromConnectionString(connectionString, "settings");
-  } catch (error) {
-    console.error("Error initializing table clients:", error);
+    await client.createTable();
+  } catch (error: any) {
+    // "TableAlreadyExists" is expected — ignore it
+    if (error?.statusCode !== 409) {
+      throw error;
+    }
   }
 }
 
-// Create tables if they don't exist
-export async function createTablesIfNotExist() {
-  try {
-    await propertiesClient.createTable();
-    await bookingsClient.createTable();
-    await blockedDatesClient.createTable();
-    await settingsClient.createTable();
-    console.log("Tables created or already exist");
-  } catch (error) {
-    // Tables likely already exist
-    console.log("Tables initialization check complete");
-  }
-}
-
-// Export table clients
-export function getPropertiesClient(): TableClient {
+// Export table clients (lazy init + auto-create table)
+export async function getPropertiesClient(): Promise<TableClient> {
   if (!propertiesClient) initializeTableClients();
+  await ensureTable(propertiesClient);
   return propertiesClient;
 }
 
-export function getBookingsClient(): TableClient {
+export async function getBookingsClient(): Promise<TableClient> {
   if (!bookingsClient) initializeTableClients();
+  await ensureTable(bookingsClient);
   return bookingsClient;
 }
 
-export function getBlockedDatesClient(): TableClient {
+export async function getBlockedDatesClient(): Promise<TableClient> {
   if (!blockedDatesClient) initializeTableClients();
+  await ensureTable(blockedDatesClient);
   return blockedDatesClient;
 }
 
-export function getSettingsClient(): TableClient {
+export async function getSettingsClient(): Promise<TableClient> {
   if (!settingsClient) initializeTableClients();
+  await ensureTable(settingsClient);
   return settingsClient;
 }
 

@@ -31,7 +31,7 @@ export async function updateBooking(
       };
     }
 
-    const bookingsClient = getBookingsClient();
+    const bookingsClient = await getBookingsClient();
 
     // Fetch the booking
     const booking = await bookingsClient.getEntity("BOOKING", rowKey);

@@ -81,8 +81,8 @@ export async function createBooking(
     const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
 
     // Check availability (query existing bookings for overlaps)
-    const bookingsClient = getBookingsClient();
-    const blockedDatesClient = getBlockedDatesClient();
+    const bookingsClient = await getBookingsClient();
+    const blockedDatesClient = await getBlockedDatesClient();
 
     // Query bookings that overlap with requested dates
     const bookingsIter = bookingsClient.listEntities({
@@ -200,11 +200,12 @@ export async function createBooking(
       jsonBody: response,
       headers: { "Access-Control-Allow-Origin": "*" },
     };
-  } catch (error) {
-    context.log("Error creating booking:", error);
+  } catch (error: any) {
+    const errorMessage = error?.message || String(error);
+    context.log("Error creating booking:", errorMessage, error);
     return {
       status: 500,
-      jsonBody: { error: "An error occurred while creating your booking. Please try again." },
+      jsonBody: { error: `Booking failed: ${errorMessage}` },
       headers: { "Access-Control-Allow-Origin": "*" },
     };
   }
