@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -81,12 +81,6 @@ export default function AdminLogin() {
             </Button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/admin/signup" className="text-primary font-medium hover:underline">
-              Request Access
-            </Link>
-          </p>
         </Card>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import * as bcrypt from "bcryptjs";
-import { getAdminsClient } from "../shared/tableStorage";
+import { getAdminsClient, seedAdmins } from "../shared/tableStorage";
 import { generateToken } from "../shared/auth";
 
 export async function adminLogin(
@@ -31,6 +31,7 @@ export async function adminLogin(
       };
     }
 
+    await seedAdmins();
     const adminsClient = await getAdminsClient();
 
     // Look up admin by email
@@ -50,15 +51,6 @@ export async function adminLogin(
       return {
         status: 401,
         jsonBody: { error: "Invalid email or password" },
-        headers: { "Access-Control-Allow-Origin": "*" },
-      };
-    }
-
-    // Check if admin is approved
-    if (admin.status !== "approved") {
-      return {
-        status: 403,
-        jsonBody: { error: "Your account is pending approval. Please check your email." },
         headers: { "Access-Control-Allow-Origin": "*" },
       };
     }

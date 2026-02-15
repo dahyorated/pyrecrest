@@ -20,8 +20,6 @@ const modules = [
   "../UpdateBooking/index",
   "../CheckAvailability/index",
   "../AdminLogin/index",
-  "../AdminSignup/index",
-  "../ApproveAdmin/index",
 ];
 
 for (const mod of modules) {

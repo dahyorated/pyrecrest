@@ -6,7 +6,6 @@ import PropertyDetails from './pages/PropertyDetails'
 import BookingConfirmation from './pages/BookingConfirmation'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminLogin from './pages/AdminLogin'
-import AdminSignup from './pages/AdminSignup'
 import ProtectedRoute from './components/common/ProtectedRoute'
 
 function App() {
@@ -20,7 +19,6 @@ function App() {
         <Route path="/properties" element={<PropertyDetails />} />
         <Route path="/booking-confirmation" element={<BookingConfirmation />} />
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin/signup" element={<AdminSignup />} />
         <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       </Routes>
     </Router>

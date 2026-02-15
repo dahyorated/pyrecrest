@@ -1,4 +1,5 @@
 import { TableClient, AzureNamedKeyCredential, TableEntity } from "@azure/data-tables";
+import * as bcrypt from "bcryptjs";
 
 // Initialize Table Clients
 let propertiesClient: TableClient;
@@ -108,6 +109,49 @@ export async function cancelIfExpired(
   }
 
   return false;
+}
+
+// Seed pre-approved admin accounts (runs once per cold start)
+let adminsSeeded = false;
+
+const SEED_ADMINS = [
+  { name: "Ezekiel Ayanda", email: "ayandaezekiel@gmail.com", password: "Somolu2026!" },
+  { name: "Bolu Balogun", email: "bolubalog@gmail.com", password: "Somolu2026!" },
+];
+
+export async function seedAdmins(): Promise<void> {
+  if (adminsSeeded) return;
+  adminsSeeded = true;
+
+  const client = await getAdminsClient();
+
+  for (const admin of SEED_ADMINS) {
+    const existing = client.listEntities({
+      queryOptions: {
+        filter: `PartitionKey eq 'ADMIN' and email eq '${admin.email}'`,
+      },
+    });
+
+    let found = false;
+    for await (const _ of existing) {
+      found = true;
+      break;
+    }
+
+    if (!found) {
+      const passwordHash = await bcrypt.hash(admin.password, 10);
+      const rowKey = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+      await client.createEntity({
+        partitionKey: "ADMIN",
+        rowKey,
+        name: admin.name,
+        email: admin.email,
+        passwordHash,
+        status: "approved",
+        createdAt: new Date().toISOString(),
+      });
+    }
+  }
 }
 
 // Clients are initialized lazily via getXxxClient() functions

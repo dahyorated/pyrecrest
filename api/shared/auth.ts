@@ -29,22 +29,6 @@ export function verifyToken(token: string): JWTPayload | null {
   }
 }
 
-export function generateApprovalToken(email: string): string {
-  return jwt.sign({ email, purpose: "admin_approval" }, getJwtSecret(), {
-    expiresIn: "24h",
-  });
-}
-
-export function verifyApprovalToken(token: string): { email: string; purpose: string } | null {
-  try {
-    const payload = jwt.verify(token, getJwtSecret()) as any;
-    if (payload.purpose !== "admin_approval") return null;
-    return payload;
-  } catch {
-    return null;
-  }
-}
-
 export function extractTokenFromHeader(authHeader?: string): string | null {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return null;
