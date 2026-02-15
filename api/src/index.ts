@@ -19,7 +19,6 @@ const modules = [
   "../GetBookings/index",
   "../UpdateBooking/index",
   "../CheckAvailability/index",
-  "../AdminLogin/index",
 ];
 
 for (const mod of modules) {

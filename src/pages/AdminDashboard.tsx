@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 
@@ -24,26 +23,6 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
-  const navigate = useNavigate();
-  const adminName = localStorage.getItem('pyrecrest_admin_name') || 'Admin';
-
-  const getAuthHeaders = (): Record<string, string> => {
-    const token = localStorage.getItem('pyrecrest_admin_token');
-    return {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    };
-  };
-
-  const handleUnauthorized = () => {
-    localStorage.removeItem('pyrecrest_admin_token');
-    localStorage.removeItem('pyrecrest_admin_name');
-    navigate('/admin/login');
-  };
-
-  const handleLogout = () => {
-    handleUnauthorized();
-  };
 
   useEffect(() => {
     fetchBookings();
@@ -51,13 +30,7 @@ export default function AdminDashboard() {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch('/api/GetBookings', {
-        headers: getAuthHeaders(),
-      });
-      if (response.status === 401) {
-        handleUnauthorized();
-        return;
-      }
+      const response = await fetch('/api/GetBookings');
       const data = await response.json();
       setBookings(data.bookings || []);
     } catch (error) {
@@ -69,15 +42,11 @@ export default function AdminDashboard() {
 
   const updateBookingStatus = async (rowKey: string, status: string, paymentStatus?: string) => {
     try {
-      const response = await fetch('/api/UpdateBooking', {
+      await fetch('/api/UpdateBooking', {
         method: 'PUT',
-        headers: getAuthHeaders(),
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ rowKey, status, paymentStatus }),
       });
-      if (response.status === 401) {
-        handleUnauthorized();
-        return;
-      }
       fetchBookings();
       alert('Booking updated successfully!');
     } catch (error) {
@@ -115,17 +84,8 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-primary text-white py-6">
-        <div className="container mx-auto px-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Pyrecrest Admin Dashboard</h1>
-            <p className="text-gray-200">Welcome, {adminName}</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-          >
-            Logout
-          </button>
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl font-bold">Pyrecrest Admin Dashboard</h1>
         </div>
       </header>
 

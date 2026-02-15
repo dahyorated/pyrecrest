@@ -1,6 +1,5 @@
 import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { getBookingsClient, cancelIfExpired } from "../shared/tableStorage";
-import { requireAuth } from "../shared/auth";
 
 export async function getBookings(
   request: HttpRequest,
@@ -21,9 +20,6 @@ export async function getBookings(
   }
 
   try {
-    const auth = requireAuth(request);
-    if (!auth.valid) return auth.response;
-
     const bookingsClient = await getBookingsClient();
     const bookings = [];
 

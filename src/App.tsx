@@ -5,8 +5,6 @@ import Contact from './pages/Contact'
 import PropertyDetails from './pages/PropertyDetails'
 import BookingConfirmation from './pages/BookingConfirmation'
 import AdminDashboard from './pages/AdminDashboard'
-import AdminLogin from './pages/AdminLogin'
-import ProtectedRoute from './components/common/ProtectedRoute'
 
 function App() {
   return (
@@ -18,8 +16,7 @@ function App() {
         <Route path="/property/:id" element={<PropertyDetails />} />
         <Route path="/properties" element={<PropertyDetails />} />
         <Route path="/booking-confirmation" element={<BookingConfirmation />} />
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminDashboard />} />
       </Routes>
     </Router>
   )
