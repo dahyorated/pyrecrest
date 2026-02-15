@@ -1,16 +1,22 @@
 import { TableClient, AzureNamedKeyCredential, TableEntity } from "@azure/data-tables";
 
-const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING || "";
-const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME || "pyrecrest";
-
 // Initialize Table Clients
 let propertiesClient: TableClient;
 let bookingsClient: TableClient;
 let blockedDatesClient: TableClient;
 let settingsClient: TableClient;
 
+function getConnectionString(): string {
+  const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING || "";
+  if (!connectionString) {
+    throw new Error("AZURE_STORAGE_CONNECTION_STRING environment variable is not set");
+  }
+  return connectionString;
+}
+
 export function initializeTableClients() {
   try {
+    const connectionString = getConnectionString();
     propertiesClient = TableClient.fromConnectionString(connectionString, "properties");
     bookingsClient = TableClient.fromConnectionString(connectionString, "bookings");
     blockedDatesClient = TableClient.fromConnectionString(connectionString, "blockedDates");
@@ -68,5 +74,4 @@ export function generateRowKey(): string {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 }
 
-// Initialize on module load
-initializeTableClients();
+// Clients are initialized lazily via getXxxClient() functions
