@@ -1,21 +1,33 @@
 import { app } from "@azure/functions";
 
-// Health check - no dependencies on shared modules
+const errors: string[] = [];
+
+// Health/diagnostic endpoint - loads first, always available
 app.http("Health", {
   methods: ["GET"],
   authLevel: "anonymous",
   route: "Health",
   handler: async () => ({
     status: 200,
-    jsonBody: { status: "ok", timestamp: new Date().toISOString() },
+    jsonBody: { status: "ok", errors, timestamp: new Date().toISOString() },
     headers: { "Access-Control-Allow-Origin": "*" },
   }),
 });
 
-import '../CreateBooking/index';
-import '../GetBookings/index';
-import '../UpdateBooking/index';
-import '../CheckAvailability/index';
-import '../AdminLogin/index';
-import '../AdminSignup/index';
-import '../ApproveAdmin/index';
+const modules = [
+  "../CreateBooking/index",
+  "../GetBookings/index",
+  "../UpdateBooking/index",
+  "../CheckAvailability/index",
+  "../AdminLogin/index",
+  "../AdminSignup/index",
+  "../ApproveAdmin/index",
+];
+
+for (const mod of modules) {
+  try {
+    require(mod);
+  } catch (e: any) {
+    errors.push(`${mod}: ${e.message}`);
+  }
+}
