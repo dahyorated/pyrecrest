@@ -8,6 +8,8 @@ interface Booking {
   guestName: string;
   guestEmail: string;
   guestPhone: string;
+  guestCount: number;
+  specialRequests?: string;
   checkIn: string;
   checkOut: string;
   nights: number;
@@ -130,6 +132,12 @@ export default function AdminDashboard() {
             >
               Confirmed ({stats.confirmed})
             </Button>
+            <Button
+              variant={filter === 'cancelled' ? 'primary' : 'secondary'}
+              onClick={() => setFilter('cancelled')}
+            >
+              Cancelled ({bookings.filter(b => b.status === 'cancelled').length})
+            </Button>
           </div>
         </Card>
 
@@ -167,6 +175,12 @@ export default function AdminDashboard() {
                         <div className="font-medium">{booking.guestName}</div>
                         <div className="text-sm text-gray-500">{booking.guestEmail}</div>
                         <div className="text-sm text-gray-500">{booking.guestPhone}</div>
+                        <div className="text-sm text-gray-500">{booking.guestCount} guest{booking.guestCount > 1 ? 's' : ''}</div>
+                        {booking.specialRequests && (
+                          <div className="mt-2 text-sm bg-blue-50 text-blue-700 px-2 py-1 rounded">
+                            <strong>Request:</strong> {booking.specialRequests}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <div>{new Date(booking.checkIn).toLocaleDateString('en-GB')}</div>
@@ -190,17 +204,32 @@ export default function AdminDashboard() {
                           Payment: {booking.paymentStatus}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 space-y-2">
                         {booking.status === 'pending_payment' && (
                           <button
                             onClick={() => updateBookingStatus(booking.rowKey, 'confirmed', 'paid')}
-                            className="text-sm text-green-600 hover:text-green-800 font-medium"
+                            className="block text-sm text-green-600 hover:text-green-800 font-medium"
                           >
                             Confirm Payment
                           </button>
                         )}
                         {booking.status === 'confirmed' && (
-                          <span className="text-sm text-gray-500">Confirmed ✓</span>
+                          <span className="block text-sm text-gray-500">Confirmed ✓</span>
+                        )}
+                        {booking.status === 'cancelled' && (
+                          <span className="block text-sm text-red-500">Cancelled</span>
+                        )}
+                        {(booking.status === 'pending_payment' || booking.status === 'confirmed') && (
+                          <button
+                            onClick={() => {
+                              if (confirm(`Cancel booking ${booking.bookingReference}?`)) {
+                                updateBookingStatus(booking.rowKey, 'cancelled', 'failed');
+                              }
+                            }}
+                            className="block text-sm text-red-500 hover:text-red-700 font-medium"
+                          >
+                            Cancel Booking
+                          </button>
                         )}
                       </td>
                     </tr>
