@@ -171,11 +171,17 @@ export async function createBooking(
     };
 
     // Send confirmation emails
+    let emailSent = false;
     try {
       await sendBookingConfirmationEmail(booking, bankDetails);
       await sendAdminNotificationEmail(booking);
-    } catch (emailError) {
-      context.log("Error sending emails:", emailError);
+      emailSent = true;
+      context.log(`Emails sent successfully for booking ${bookingReference}`);
+    } catch (emailError: any) {
+      context.log(`Error sending emails for booking ${bookingReference}:`, emailError?.message || emailError);
+      if (emailError?.response) {
+        context.log("SendGrid response:", JSON.stringify(emailError.response.body));
+      }
       // Don't fail the booking if email fails
     }
 
@@ -186,6 +192,7 @@ export async function createBooking(
       bookingReference: bookingReference,
       bookingDetails: booking,
       bankDetails: bankDetails,
+      emailSent: emailSent,
     };
 
     return {

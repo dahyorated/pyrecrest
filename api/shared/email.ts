@@ -1,15 +1,21 @@
 import sgMail from "@sendgrid/mail";
 import { Booking, BankDetails } from "./types";
 
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || "";
-const FROM_EMAIL = process.env.ADMIN_EMAIL || "noreply@pyrecrest.com";
-
-sgMail.setApiKey(SENDGRID_API_KEY);
+function initSendGrid(): string {
+  const apiKey = process.env.SENDGRID_API_KEY || "";
+  if (!apiKey) {
+    throw new Error("SENDGRID_API_KEY environment variable is not set");
+  }
+  sgMail.setApiKey(apiKey);
+  return process.env.ADMIN_EMAIL || "noreply@pyrecrest.com";
+}
 
 export async function sendBookingConfirmationEmail(
   booking: Booking,
   bankDetails: BankDetails
 ): Promise<void> {
+  const FROM_EMAIL = initSendGrid();
+
   const msg = {
     to: booking.guestEmail,
     from: FROM_EMAIL,
@@ -61,7 +67,7 @@ export async function sendBookingConfirmationEmail(
               <p><strong>Reference:</strong> ${booking.bookingReference}</p>
             </div>
 
-            <p><strong>Important:</strong> After making payment, please send your payment confirmation to ${FROM_EMAIL} with your booking reference.</p>
+            <p><strong>Important:</strong> After making payment, please send your payment confirmation to ${process.env.ADMIN_EMAIL || FROM_EMAIL} with your booking reference.</p>
 
             ${booking.specialRequests ? `<p><strong>Special Requests:</strong> ${booking.specialRequests}</p>` : ''}
 
@@ -91,7 +97,13 @@ export async function sendBookingConfirmationEmail(
 }
 
 export async function sendAdminNotificationEmail(booking: Booking): Promise<void> {
+  const FROM_EMAIL = initSendGrid();
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "";
+
+  if (!ADMIN_EMAIL) {
+    console.error("ADMIN_EMAIL environment variable is not set, skipping admin notification");
+    return;
+  }
 
   const msg = {
     to: ADMIN_EMAIL,

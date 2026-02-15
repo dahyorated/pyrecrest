@@ -88,4 +88,5 @@ export interface CreateBookingResponse {
   bookingReference: string;
   bookingDetails: Booking;
   bankDetails: BankDetails;
+  emailSent?: boolean;
 }
