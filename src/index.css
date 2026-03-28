@@ -19,15 +19,15 @@
   }
 
   .gradient-primary {
-    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 50%, #60A5FA 100%);
+    background: linear-gradient(135deg, #3A1F10 0%, #5C3D2E 50%, #8B6914 100%);
   }
 
   .gradient-accent {
-    background: linear-gradient(135deg, #0D9488 0%, #14B8A6 50%, #2DD4BF 100%);
+    background: linear-gradient(135deg, #8B6914 0%, #C9A554 50%, #DFC28A 100%);
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+    background: linear-gradient(135deg, #5C3D2E 0%, #8B6914 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -57,11 +57,11 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary-500 rounded-full;
+  @apply bg-primary-600 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary-600;
+  @apply bg-primary-700;
 }
 
 /* Date input styling */

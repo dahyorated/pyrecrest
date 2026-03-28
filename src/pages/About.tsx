@@ -17,20 +17,27 @@ export default function About() {
             <h2 className="text-2xl font-bold text-primary mb-4">Our Story</h2>
             <div className="prose prose-gray max-w-none">
               <p className="text-gray-600 mb-4">
-                Welcome to Pyrecrest, your trusted partner for premium serviced short-let apartments in Nigeria.
+                Welcome to Pyrecrest, your trusted partner for premium real estate solutions in Nigeria.
                 We understand that finding the perfect accommodation can be challenging, especially when you're
                 away from home. That's why we're committed to providing you with a comfortable, secure, and
-                luxurious home away from home experience.
+                luxurious living experience.
               </p>
               <p className="text-gray-600 mb-4">
-                Founded with a vision to redefine the short-let apartment experience in Nigeria, Pyrecrest
+                Founded with a vision to redefine the real estate experience in Nigeria, Pyrecrest
                 combines modern luxury with affordability. We believe that everyone deserves access to quality
                 accommodation, whether for business or leisure.
               </p>
+              <p className="text-gray-600 mb-4">
+                Looking for a premium shortlet stay? Visit{' '}
+                <a href="https://leo.pyrecrest.com" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline">
+                  LEO by Pyrecrest
+                </a>{' '}
+                for our luxury serviced apartments in Lagos.
+              </p>
               <p className="text-gray-600">
-                Our apartments are strategically located, fully furnished, and equipped with all the amenities
+                Our properties are strategically located, fully furnished, and equipped with all the amenities
                 you need for a comfortable stay. From high-speed internet for remote work to fully equipped
-                kitchens for home-cooked meals, we've thought of everything to make your stay memorable.
+                kitchens for home-cooked meals, we've thought of everything to make your experience memorable.
               </p>
             </div>
           </Card>
@@ -40,14 +47,14 @@ export default function About() {
               <div className="text-4xl mb-3">🎯</div>
               <h3 className="font-bold text-primary mb-2">Our Mission</h3>
               <p className="text-gray-600 text-sm">
-                To provide exceptional short-let accommodations that feel like home
+                To provide exceptional real estate solutions that feel like home
               </p>
             </Card>
             <Card className="p-6 text-center">
               <div className="text-4xl mb-3">👁️</div>
               <h3 className="font-bold text-primary mb-2">Our Vision</h3>
               <p className="text-gray-600 text-sm">
-                To be Nigeria's most trusted premium short-let apartment provider
+                To be Nigeria's most trusted premium real estate provider
               </p>
             </Card>
             <Card className="p-6 text-center">
@@ -68,7 +75,7 @@ export default function About() {
                 { title: 'Flexible Stays', desc: 'Whether it\'s a night or a month, we\'ve got you covered' },
                 { title: '24/7 Support', desc: 'Our team is always available to assist you' },
                 { title: 'Secure Payment', desc: 'Safe and convenient payment options' },
-                { title: 'Verified Properties', desc: 'All our apartments are vetted for quality and safety' },
+                { title: 'Verified Properties', desc: 'All our properties are vetted for quality and safety' },
               ].map((item, index) => (
                 <div key={index} className="flex items-start gap-3">
                   <svg className="w-6 h-6 text-accent flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">

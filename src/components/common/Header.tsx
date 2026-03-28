@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Logo from './Logo';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [propertiesOpen, setPropertiesOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,6 +14,16 @@ export default function Header() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setPropertiesOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -32,15 +44,47 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2">
             <NavLink to="/">Home</NavLink>
-            <NavLink to="/properties">Properties</NavLink>
+
+            {/* Properties Dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setPropertiesOpen(!propertiesOpen)}
+                className="px-4 py-2 text-gray-900 hover:text-primary-600 rounded-lg hover:bg-primary-50 transition-all duration-200 font-semibold inline-flex items-center gap-1"
+              >
+                Properties
+                <svg className={`w-4 h-4 transition-transform duration-200 ${propertiesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {propertiesOpen && (
+                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-2xl shadow-hover border border-gray-100 overflow-hidden animate-slide-down">
+                  <a
+                    href="https://leo.pyrecrest.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-5 py-4 hover:bg-primary-50 transition-colors"
+                    onClick={() => setPropertiesOpen(false)}
+                  >
+                    <span className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center text-lg">🏢</span>
+                    <div>
+                      <div className="font-bold text-gray-900 text-sm">LEO by Pyrecrest</div>
+                      <div className="text-xs text-gray-500">Luxury shortlet apartments</div>
+                    </div>
+                  </a>
+                </div>
+              )}
+            </div>
+
             <NavLink to="/about">About</NavLink>
             <NavLink to="/contact">Contact</NavLink>
-            <Link
-              to="/property/apartment-001"
-              className="ml-4 px-6 py-3 gradient-accent text-white rounded-full font-bold shadow-md hover:shadow-glow transform hover:scale-105 transition-all duration-300"
+            <a
+              href="https://leo.pyrecrest.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-4 px-6 py-3 gradient-accent text-gray-900 rounded-full font-bold shadow-md hover:shadow-glow transform hover:scale-105 transition-all duration-300"
             >
               Book Now
-            </Link>
+            </a>
           </div>
 
           {/* Mobile menu button */}
@@ -68,22 +112,33 @@ export default function Header() {
             <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>
               Home
             </MobileNavLink>
-            <MobileNavLink to="/properties" onClick={() => setMobileMenuOpen(false)}>
-              Properties
-            </MobileNavLink>
+            <a
+              href="https://leo.pyrecrest.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-3 text-gray-900 hover:text-primary-600 hover:bg-primary-50 rounded-xl transition-all duration-200 font-semibold flex items-center justify-between"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span>LEO by Pyrecrest</span>
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
             <MobileNavLink to="/about" onClick={() => setMobileMenuOpen(false)}>
               About
             </MobileNavLink>
             <MobileNavLink to="/contact" onClick={() => setMobileMenuOpen(false)}>
               Contact
             </MobileNavLink>
-            <Link
-              to="/property/apartment-001"
-              className="px-6 py-3 gradient-accent text-white rounded-xl font-bold text-center shadow-md"
+            <a
+              href="https://leo.pyrecrest.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 gradient-accent text-gray-900 rounded-xl font-bold text-center shadow-md"
               onClick={() => setMobileMenuOpen(false)}
             >
               Book Now
-            </Link>
+            </a>
           </div>
         </div>
       </nav>

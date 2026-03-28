@@ -136,7 +136,7 @@ export default function BookingConfirmation() {
               <div>
                 <h2 className="text-xl font-bold text-primary mb-2">Bank Transfer Details</h2>
                 <p className="text-gray-700 text-sm mb-4">
-                  Make payment to the account below and send confirmation to confirm@pyrecrest.com
+                  Make payment to the account below and send confirmation to pyrecrestng@gmail.com
                 </p>
               </div>
             </div>
@@ -167,7 +167,7 @@ export default function BookingConfirmation() {
             <div className="mt-4 p-4 bg-yellow-50 rounded-lg">
               <p className="text-sm text-gray-700">
                 <strong>Important:</strong> Please include your booking reference ({bookingReference})
-                in the transfer narration or send proof of payment to confirm@pyrecrest.com
+                in the transfer narration or send proof of payment to pyrecrestng@gmail.com
               </p>
             </div>
           </Card>
